@@ -7,7 +7,6 @@ import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 dotenv.config();
 
-const JWT_SECRET = "your_secret_key";
 
 const app =express();
 app.use(express.json())
@@ -60,7 +59,7 @@ app.post('/api/login', async(req,res)=>{
             return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        const token = jwt.sign({id: user._id, email: user.email}, JWT_SECRET, { expiresIn: "1h" })
+        const token = jwt.sign({id: user._id, email: user.email}, process.env.JWT_SECRET, { expiresIn: "1h" })
 
         res.cookie("token", token)
 
@@ -80,7 +79,7 @@ const verifyToken = (req, res, next)=>{
         return res.status(403).json({message: "no token provided"})
     }
 
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
             return res.status(401).json({ message: "Failed to authenticate token" });
         }
