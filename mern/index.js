@@ -6,12 +6,16 @@ import jwt from "jsonwebtoken"
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 dotenv.config();
+import bcrypt from 'bcryptjs'
 
 
 const app =express();
 app.use(express.json())
-app.use(cors())
-app.use(cookieParser())
+app.use(cors({
+    origin: 'http://localhost:5173', 
+    credentials: true, 
+ }));
+ app.use(cookieParser())
 
 mongoose.connect(process.env.MONGODB)
 .then(() => console.log("MongoDB connected"))
@@ -43,7 +47,7 @@ app.post("/register", async (req, res) => {
 
 app.post('/api/login', async(req,res)=>{
     try {
-        const [email, password] = req.body
+        const {email, password} = req.body
 
         if(!email|| !password){
             return res.status(400).json({message: "all fields are required"})
@@ -61,8 +65,11 @@ app.post('/api/login', async(req,res)=>{
 
         const token = jwt.sign({id: user._id, email: user.email}, process.env.JWT_SECRET, { expiresIn: "1h" })
 
-        res.cookie("token", token)
-
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: false, 
+            sameSite: 'None', 
+        });
         res.status(200).json({ message: "Login successful" });
 
     } catch (error) {
