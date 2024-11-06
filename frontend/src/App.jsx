@@ -5,9 +5,12 @@ import Register from './pages/Register'
 import About from './pages/About'
 import Profile from './pages/Profile'
 import Header from './components/Header'
+import { store } from './redux/store'
+import { Provider } from 'react-redux'
 
 export default function App() {
   return (
+    <Provider store={store}>
     <BrowserRouter>
     <Header/>
     <Routes>
@@ -20,5 +23,6 @@ export default function App() {
 
     </Routes>
     </BrowserRouter>
+    </Provider>
   )
 }
